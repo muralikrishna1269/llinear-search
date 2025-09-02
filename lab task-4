@@ -1,0 +1,168 @@
+1) merge sort :
+____________________
+
+#include<stdio.h>
+void merge(int arr[], int left, int middle, int right) {
+    int i, j, k;
+    int NL = middle - left + 1;
+    int NR = right - middle;
+    int L[NL], R[NR];
+    for (i = 0; i < NL; i++)
+        L[i] = arr[left + i];
+    for (j = 0; j < NR; j++)
+        R[j] = arr[middle + 1 + j];
+    i = 0; j = 0; k = left;
+    while (i < NL && j < NR) {
+        if (L[i] <= R[j])
+            arr[k++] = L[i++];
+        else
+            arr[k++] = R[j++];
+    }
+    while (i < NL)
+        arr[k++] = L[i++];
+    while (j < NR)
+        arr[k++] = R[j++];
+}
+void mergeSort(int arr[], int l, int r) {
+    if (l < r) {
+        int m = l + (r - l) / 2;
+        mergeSort(arr, l, m);
+        mergeSort(arr, m + 1, r);
+        merge(arr, l, m, r);
+    }
+}
+void printArray(int arr[], int size) {
+    for (int i = 0; i < size; i++)
+        printf("%d ", arr[i]);
+    printf("\n");
+}
+int main() {
+    int arr[] = {69, 42, 13, 19, 143, 787};
+    int arr_size = sizeof(arr) / sizeof(arr[0]);
+    printf("Original array:\n");
+    printArray(arr, arr_size);
+    mergeSort(arr, 0, arr_size - 1);
+    printf("Sorted array:\n");
+    printArray(arr, arr_size);
+    return 0;
+}
+_________________________________________________________________________________________________________
+
+
+2)BUCKET SORT:
+____________________
+
+#include <stdio.h>
+#include <stdlib.h>
+struct Node {
+    float data;
+    struct Node* next;
+};
+struct Node* insertSorted(struct Node* head, float value) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = value;
+    newNode->next = NULL;
+    if (head == NULL || value < head->data) {
+        newNode->next = head;
+        return newNode;
+    }
+    struct Node* current = head;
+    while (current->next != NULL && current->next->data < value) {
+        current = current->next;
+    }
+    newNode->next = current->next;
+    current->next = newNode;
+    return head;
+}
+void bucketSort(float arr[], int n) {
+    struct Node** buckets = (struct Node**)malloc(n * sizeof(struct Node*));
+    for (int i = 0; i < n; i++) {
+        buckets[i] = NULL;
+    }
+    for (int i = 0; i < n; i++) {
+        int bucketIndex = n * arr[i];
+        buckets[bucketIndex] = insertSorted(buckets[bucketIndex], arr[i]);
+    }
+    int index = 0;
+    for (int i = 0; i < n; i++) {
+        struct Node* current = buckets[i];
+        while (current != NULL) {
+            arr[index++] = current->data;
+            struct Node* temp = current;
+            current = current->next;
+            free(temp);
+        }
+    }
+    free(buckets);
+}
+void printArray(float arr[], int n) {
+    for (int i = 0; i < n; i++) {
+        printf("%.2f ", arr[i]);
+    }
+    printf("\n");
+}
+int main() {
+    float arr[] = {0.42, 0.32, 0.23, 0.52, 0.25, 0.47, 0.51};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    printArray(arr, n);
+    bucketSort(arr, n);
+    printArray(arr, n);
+    return 0;
+}
+___________________________________________________________________________________________________________________
+
+3)quick sort:
+
+
+#include<stdio.h>
+void quickSort(int arr[], int low, int high) {
+    if (low < high) {
+        int pivot = arr[high];
+        int i = low;
+        for (int j = low; j < high; j++) {
+            if (arr[j] < pivot) {
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+                i++;
+            }
+        }
+        int temp = arr[i];
+        arr[i] = arr[high];
+        arr[high] = temp;
+        quickSort(arr, low, i - 1);
+        quickSort(arr, i + 1, high);
+    }
+}
+void printArray(int arr[], int size) {
+    for (int i = 0; i < size; i++)
+        printf("%d ", arr[i]);
+    printf("\n");
+}
+int main() {
+    int arr[] = {69, 143, 13, 19, 787};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    printf("Original array:\n");
+    printArray(arr, n);
+    quickSort(arr, 0, n - 1);
+    printf("Sorted array:\n");
+    printArray(arr, n);
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
