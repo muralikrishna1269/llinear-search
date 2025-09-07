@@ -1,0 +1,225 @@
+1)  maximum and minimum element in sub array:
+
+#include <stdio.h>
+#define MAX_SIZE 100
+int arr[MAX_SIZE]; 
+int max(int a, int b) {
+    if (a > b)
+        return a;
+    else
+        return b;
+}
+int min(int a, int b) {
+    if (a < b)
+        return a;
+    else
+        return b;
+}
+int findMax(int arr[], int low, int high) {
+    if (low == high)
+        return arr[low];
+    int mid = (low + high) / 2;
+    int left_max = findMax(arr, low, mid);
+    int right_max = findMax(arr, mid + 1, high);
+    return max(left_max, right_max);
+}
+int findMin(int arr[], int low, int high) {
+    if (low == high)
+        return arr[low];
+    int mid = (low + high) / 2;
+    int left_min = findMin(arr, low, mid);
+    int right_min = findMin(arr, mid + 1, high);
+    return min(left_min, right_min);
+}
+int main() {
+    int n, i;
+    printf("Enter number of elements (max 100): ");
+    scanf("%d", &n);
+    if (n <= 0 || n > MAX_SIZE) {
+        printf("Invalid number of elements.\n");
+        return 1;
+    }
+    printf("Enter %d elements:\n", n);
+    for (i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+    int maximum = findMax(arr, 0, n - 1);
+    int minimum = findMin(arr, 0, n - 1);
+    printf("Maximum element in the array is %d\n", maximum);
+    printf("Minimum element in the array is %d\n", minimum);
+    return 0;
+}
+__________________________________________________________________________________________________________
+
+2)MAXIMUM SUBARRAY
+_________________--
+#include <stdio.h>
+#include <limits.h>
+int max(int a, int b) {
+    if (a > b)
+        return a;
+    else
+        return b;
+}
+
+int max3(int a, int b, int c) {
+    return max(max(a, b), c);
+}
+
+int maxCrossingSubarray(int arr[], int low, int mid, int high) {
+    int left_sum = INT_MIN;
+    int sum = 0;
+    int i;
+
+    for (i = mid; i >= low; i--) {
+        sum += arr[i];
+        if (sum > left_sum)
+            left_sum = sum;
+    }
+
+    int right_sum = INT_MIN;
+    sum = 0;
+
+    for (i = mid + 1; i <= high; i++) {
+        sum += arr[i];
+        if (sum > right_sum)
+            right_sum = sum;
+    }
+
+    return left_sum + right_sum;
+}
+
+int maxSubarray(int arr[], int low, int high) {
+    if (low == high)
+        return arr[low];
+
+    int mid = (low + high) / 2;
+
+    int left_max = maxSubarray(arr, low, mid);
+    int right_max = maxSubarray(arr, mid + 1, high);
+    int cross_max = maxCrossingSubarray(arr, low, mid, high);
+
+    return max3(left_max, right_max, cross_max);
+}
+
+int main() {
+    int arr[100], n, i;
+
+    printf("Enter number of elements (max 100): ");
+    scanf("%d", &n);
+
+    if (n <= 0 || n > 100) {
+        printf("Invalid number of elements.\n");
+        return 1;
+    }
+
+    printf("Enter %d elements:\n", n);
+    for (i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+
+    int max_sum = maxSubarray(arr, 0, n - 1);
+    printf("Maximum subarray sum is %d\n", max_sum);
+
+    return 0;
+}
+__________________________________________________________________________________________________________
+
+3) HASHING :
+
+#include <stdio.h>
+#include <stdlib.h>
+#define TABLE_SIZE 10
+struct Node {
+    int data;
+    struct Node* next;
+};
+struct Node* hashTable[TABLE_SIZE];
+int hash(int key) {
+    return key % TABLE_SIZE;
+}
+void insert(int key) {
+    int index = hash(key);
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = key;
+    newNode->next = hashTable[index];
+    hashTable[index] = newNode;
+    printf("Inserted %d at index %d\n", key, index);
+}
+void delete(int key) {
+    int index = hash(key);
+    struct Node* curr = hashTable[index];
+    struct Node* prev = NULL;
+    while (curr != NULL) {
+        if (curr->data == key) {
+            if (prev == NULL)
+                hashTable[index] = curr->next;
+            else
+                prev->next = curr->next;
+            free(curr);
+            printf("Deleted %d from index %d\n", key, index);
+            return;
+        }
+        prev = curr;
+        curr = curr->next;
+    }
+    printf("Key %d not found\n", key);
+}
+void search(int key) {
+    int index = hash(key);
+    struct Node* curr = hashTable[index];
+    while (curr != NULL) {
+        if (curr->data == key) {
+            printf("Key %d found at index %d\n", key, index);
+            return;
+        }
+        curr = curr->next;
+    }
+    printf("Key %d not found\n", key);
+}
+void display() {
+	int i;
+    for ( i = 0; i < TABLE_SIZE; i++) {
+        printf("[%d]: ", i);
+        struct Node* curr = hashTable[i];
+        while (curr != NULL) {
+            printf("%d -> ", curr->data);
+            curr = curr->next;
+        }
+        printf("NULL\n");
+    }
+}
+int main() {
+    int choice, key;
+    printf("\n====== Hash Table with Chaining ======\n");
+    printf("1. Insert\n2. Delete\n3. Search\n4. Display\n5. Exit\n");
+    while (1) {
+        printf("\nEnter your choice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                printf("Enter key to insert: ");
+                scanf("%d", &key);
+                insert(key);
+                break;
+            case 2:
+                printf("Enter key to delete: ");
+                scanf("%d", &key);
+                delete(key);
+                break;
+            case 3:
+                printf("Enter key to search: ");
+                scanf("%d", &key);
+                search(key);
+                break;
+            case 4:
+                display();
+                break;
+            case 5:
+                printf("Exiting program.\n");
+                exit(0);
+            default:
+                printf("Invalid choice. Try again.\n");
+        }
+    }
+    return 0;
+}
