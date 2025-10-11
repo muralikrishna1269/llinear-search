@@ -1,0 +1,97 @@
+1)KRUSKAL'S ALGORITHM:
+________________________________________________________________
+
+#include <stdio.h>
+#define MAX 100
+int parent[MAX];
+int find(int i) {
+    while (parent[i] != i)
+        i = parent[i];
+    return i;
+}
+void union_set(int i, int j) {
+    int a = find(i);
+    int b = find(j);
+    parent[a] = b;
+}
+int main() {
+    int n, e;
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+    printf("Enter number of edges: ");
+    scanf("%d", &e);
+    int u, v, w;
+    int edges[MAX][3];
+    printf("Enter edges (u v w):\n");
+    for (int i = 0; i < e; i++)
+        scanf("%d %d %d", &edges[i][0], &edges[i][1], &edges[i][2]);
+    for (int i = 0; i < e - 1; i++)
+        for (int j = 0; j < e - i - 1; j++)
+            if (edges[j][2] > edges[j + 1][2]) {
+                int temp0 = edges[j][0];
+                int temp1 = edges[j][1];
+                int temp2 = edges[j][2];
+                edges[j][0] = edges[j + 1][0];
+                edges[j][1] = edges[j + 1][1];
+                edges[j][2] = edges[j + 1][2];
+                edges[j + 1][0] = temp0;
+                edges[j + 1][1] = temp1;
+                edges[j + 1][2] = temp2;
+            }
+    for (int i = 0; i < n; i++)
+        parent[i] = i;
+    int count = 0, mincost = 0;
+    printf("\nEdges in MST:\n");
+    for (int i = 0; i < e && count < n - 1; i++) {
+        int a = find(edges[i][0]);
+        int b = find(edges[i][1]);
+        if (a != b) {
+            printf("%d - %d : %d\n", edges[i][0], edges[i][1], edges[i][2]);
+            union_set(a, b);
+            mincost += edges[i][2];
+            count++;
+        }
+    }
+    printf("Minimum Cost = %d\n", mincost);
+    return 0;
+}
+
+--------------------------------------------------------------------------------
+
+2)PRIMS ALGORTIHM:
+______________________________________________________________________________________________
+
+#include <stdio.h>
+#define INF 9999999
+#define MAX 100
+int main() {
+    int n;
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+    int cost[MAX][MAX];
+    printf("Enter the cost as an adjacency matrix (999 for no edge):\n");
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            scanf("%d", &cost[i][j]);
+    int selected[MAX] = {0};
+    selected[0] = 1;
+    int edges = 0, mincost = 0;
+    printf("\nEdges in MST:\n");
+    while (edges < n - 1) {
+        int min = INF, x = 0, y = 0;
+        for (int i = 0; i < n; i++)
+            if (selected[i])
+                for (int j = 0; j < n; j++)
+                    if (!selected[j] && cost[i][j] < min) {
+                        min = cost[i][j];
+                        x = i;
+                        y = j;
+                    }
+        printf("%d - %d : %d\n", x, y, cost[x][y]);
+        mincost += cost[x][y];
+        selected[y] = 1;
+        edges++;
+    }
+    printf("Minimum Cost = %d\n", mincost);
+    return 0;
+}
